@@ -28,6 +28,11 @@ public class BrandAdapter extends RecyclerView.Adapter<BrandAdapter.BrandViewHol
         lastSelectedPosition = 1;
     }
 
+    public void newData(ArrayList<BrandInfo> brands) {
+        this.brands = brands;
+        notifyDataSetChanged();
+    }
+
     @Override
     public int getItemViewType(int position) {
         return brands.get(position).type;

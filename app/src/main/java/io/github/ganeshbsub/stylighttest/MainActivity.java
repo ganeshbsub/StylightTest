@@ -33,12 +33,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        String[] brandsBackup = {"Clinique", "adidas", "String Furniture", "Chi Chi London", "Rosefield", "Lancaster", "Puma", "IKEA"};
-
+        //String[] brandsBackup = {"Clinique", "adidas", "String Furniture", "Chi Chi London", "Rosefield", "Lancaster", "Puma", "IKEA"};
+        String[] backup = {};
         dataLoadProgressBar = (ProgressBar) findViewById(R.id.pb_loading_indicator);
         URL url = NetworkUtils.buildUrl();
-        
-        allBrands = BrandData.getBrandData(brandsBackup);
+        new QueryStylightTask().execute(url);
+
+        allBrands = BrandData.getBrandData(backup);
         brandRecyclerView = (RecyclerView) findViewById(R.id.rv_all_brands);
         brandAdaptor = new BrandAdapter(MainActivity.this, allBrands);
 
@@ -65,10 +66,14 @@ public class MainActivity extends AppCompatActivity {
                 JSONObject initialResults = new JSONObject(queryResult);
                 JSONArray brandsArray = initialResults.getJSONArray("brands");
                 Log.d("JSON", String.valueOf(brandsArray));
+                int noOfBrands = brandsArray.length();
 
+                brands = new String[noOfBrands];
                 for(int index = 0; index<brandsArray.length(); index++){
-                    brands[index] += brandsArray.getJSONObject(index).getString("name");
+                    brands[index] = brandsArray.getJSONObject(index).getString("name");
+                    Log.d("Object", brandsArray.getJSONObject(index).getString("name"));
                 }
+
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (JSONException e) {
@@ -82,10 +87,9 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(String[] queryResults) {
             dataLoadProgressBar.setVisibility(View.INVISIBLE);
 
-            if(queryResults != null){
+            if(queryResults != null) {
                 allBrands = BrandData.getBrandData(queryResults);
-                finish();
-                startActivity(getIntent());
+                brandAdaptor.newData(allBrands);
             }
         }
     }
