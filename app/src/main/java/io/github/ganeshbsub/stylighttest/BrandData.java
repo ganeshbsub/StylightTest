@@ -12,11 +12,11 @@ import java.util.Map;
 
 public class BrandData {
 
-    public static ArrayList<BrandInfo> getBrandData(){
+    public static ArrayList<BrandInfo> getBrandData(String[] brands){
         ArrayList<BrandInfo> allBrands = new ArrayList<BrandInfo>();
 
 
-        String[] brands = {"Clinique", "adidas", "String Furniture", "Chi Chi London", "Rosefield", "Lancaster", "Puma", "IKEA"};
+        //String[] brands = {"Clinique", "adidas", "String Furniture", "Chi Chi London", "Rosefield", "Lancaster", "Puma", "IKEA"};
         allBrands.add(new BrandInfo("Selected Brands", 0));
         allBrands.add(new BrandInfo("All Brands", 0));
 

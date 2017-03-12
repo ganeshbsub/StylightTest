@@ -1,5 +1,6 @@
 package io.github.ganeshbsub.stylighttest;
 
+import android.app.Application;
 import android.os.AsyncTask;
 import android.os.Debug;
 import android.support.v7.app.AppCompatActivity;
@@ -10,9 +11,14 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.logging.Logger;
 
 public class MainActivity extends AppCompatActivity {
@@ -27,15 +33,17 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        String[] brandsBackup = {"Clinique", "adidas", "String Furniture", "Chi Chi London", "Rosefield", "Lancaster", "Puma", "IKEA"};
+
         dataLoadProgressBar = (ProgressBar) findViewById(R.id.pb_loading_indicator);
-
-        allBrands = BrandData.getBrandData();
-
+        URL url = NetworkUtils.buildUrl();
+        
+        allBrands = BrandData.getBrandData(brandsBackup);
         brandRecyclerView = (RecyclerView) findViewById(R.id.rv_all_brands);
-        brandAdaptor = new BrandAdapter(this, allBrands);
+        brandAdaptor = new BrandAdapter(MainActivity.this, allBrands);
 
         brandRecyclerView.setAdapter(brandAdaptor);
-        brandRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        brandRecyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
 
     }
 
@@ -54,20 +62,30 @@ public class MainActivity extends AppCompatActivity {
             String[] brands = null;
             try {
                 queryResult = NetworkUtils.getResponseFromHttpUrl(searchUrl);
+                JSONObject initialResults = new JSONObject(queryResult);
+                JSONArray brandsArray = initialResults.getJSONArray("brands");
+                Log.d("JSON", String.valueOf(brandsArray));
+
+                for(int index = 0; index<brandsArray.length(); index++){
+                    brands[index] += brandsArray.getJSONObject(index).getString("name");
+                }
             } catch (IOException e) {
                 e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-            JSO
-            return queryResult;
+
+            return brands;
         }
 
         @Override
-        protected void onPostExecute(String queryResults) {
+        protected void onPostExecute(String[] queryResults) {
             dataLoadProgressBar.setVisibility(View.INVISIBLE);
-            if (queryResults != null) {
 
-            } else {
-
+            if(queryResults != null){
+                allBrands = BrandData.getBrandData(queryResults);
+                finish();
+                startActivity(getIntent());
             }
         }
     }
